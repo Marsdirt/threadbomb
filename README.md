@@ -1,6 +1,6 @@
-# Sky-Seeker
+# ThreadBomb
 
-This is a Next.js application for finding aircraft listings, prototyped in Firebase Studio.
+This is a Next.js application for finding vintage clothing listings across multiple marketplaces.
 
 ## Running Locally
 

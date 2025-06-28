@@ -1,10 +1,9 @@
-// filepath: d:\GitHub\sky-seeker-starter\src\app\page.tsx
-import MarketplaceSearch from "../components/MarketplaceSearch";
+import VintageClothingSearch from "../components/VintageClothingSearch";
 
 export default function Page() {
   return (
     <main>
-      <MarketplaceSearch />
+      <VintageClothingSearch />
     </main>
   );
 }
