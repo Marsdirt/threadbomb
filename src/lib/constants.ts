@@ -93,8 +93,8 @@ export const PLACEHOLDER_LISTINGS: AircraftListing[] = [
     location: 'Homedale, ID (Local Pickup)',
     description: 'STOL capable Kitfox, ready for backcountry adventures.',
     imageUrl: 'https://placehold.co/600x400.png',
-    listingUrl: 'https://craigslist.org', // Example
-    source: 'Craigslist',
+    listingUrl: 'https://facebook.com/marketplace', // Example
+    source: 'Facebook Marketplace',
     isExternal: true,
     dataAiHint: generateDataAiHint('Kitfox', 'Series 7'),
   },

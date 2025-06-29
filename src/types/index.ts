@@ -8,9 +8,9 @@ export interface AircraftListing {
   location: string;
   description: string;
   imageUrl: string;
-  source: 'Barnstormers' | 'Trade-a-Plane' | 'Controller' | 'Facebook Marketplace' | 'Craigslist' | 'Other';
+  source: 'Barnstormers' | 'Trade-a-Plane' | 'Controller' | 'Facebook Marketplace' | 'Other';
   listingUrl: string;
-  isExternal: boolean; // True if opens in new tab (FB, Craigslist)
+  isExternal: boolean; // True if opens in new tab (FB, etc.)
   userInteraction?: 'liked' | 'disliked' | null;
   dataAiHint?: string;
 }
