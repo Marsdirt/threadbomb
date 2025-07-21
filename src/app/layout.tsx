@@ -114,27 +114,57 @@ export default function RootLayout({
               background-color: transparent !important;
             }
             
-            /* Button styling */
+            /* Super aggressive button targeting - only for consent banners */
             div[style*="position: fixed"] button,
             div[style*="bottom"] button,
+            div[style*="position: fixed"] input[type="button"],
+            div[style*="bottom"] input[type="button"],
             .gk-consent-banner button,
+            .gk-consent-banner input[type="button"],
             [id*="gk-consent"] button,
+            [id*="gk-consent"] input[type="button"],
             .consent-banner button,
-            [id*="consent"] button,
-            [class*="consent"] button {
+            .consent-banner input[type="button"],
+            [id*="consent"] button:not(.search-button):not(.marketplace-button),
+            [class*="consent"] button:not(.search-button):not(.marketplace-button),
+            [id*="privacy"] button,
+            [class*="privacy"] button {
               background-color: #333333 !important;
               color: #ffffff !important;
-              border: 1px solid #555555 !important;
-              border-radius: 4px !important;
+              border: 2px solid #555555 !important;
+              border-radius: 6px !important;
+              padding: 8px 16px !important;
+              font-weight: 500 !important;
+              cursor: pointer !important;
+              transition: all 0.2s ease !important;
+              margin: 4px !important;
+              min-height: 36px !important;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
             }
             
-            /* Button hover */
+            /* Button hover effects - only for consent banners */
             div[style*="position: fixed"] button:hover,
             div[style*="bottom"] button:hover,
             .gk-consent-banner button:hover,
-            [id*="gk-consent"] button:hover {
+            [id*="gk-consent"] button:hover,
+            [id*="consent"] button:not(.search-button):not(.marketplace-button):hover,
+            [id*="privacy"] button:hover {
               background-color: #555555 !important;
               color: #ffffff !important;
+              border-color: #777777 !important;
+              box-shadow: 0 4px 8px rgba(0,0,0,0.4) !important;
+              transform: translateY(-1px) !important;
+            }
+            
+            /* Specific targeting for "Consent" and "Do Not Sell" text */
+            div[style*="position: fixed"] *:contains("Consent"),
+            div[style*="position: fixed"] *:contains("Do Not Sell"),
+            div[style*="position: fixed"] *:contains("Privacy"),
+            div[style*="bottom"] *:contains("Consent"),
+            div[style*="bottom"] *:contains("Do Not Sell"),
+            div[style*="bottom"] *:contains("Privacy") {
+              color: #ffffff !important;
+              background-color: #000000 !important;
             }
           `
         }} />
