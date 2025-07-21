@@ -237,24 +237,52 @@ export default function RootLayout({
               });
             }
             
+            // Add click listeners to "Do Not Sell" buttons to catch popup creation
+            function addClickListeners() {
+              document.addEventListener('click', function(e) {
+                const target = e.target;
+                const text = target.textContent || target.innerText || '';
+                
+                // If they clicked "Do Not Sell" or similar text
+                if (text.includes('Do Not Sell') || text.includes('Privacy') || text.includes('Consent')) {
+                  console.log('Privacy button clicked, will style popup');
+                  
+                  // Style immediately and then repeatedly to catch the popup
+                  setTimeout(styleEzoicElements, 50);
+                  setTimeout(styleEzoicElements, 100);
+                  setTimeout(styleEzoicElements, 200);
+                  setTimeout(styleEzoicElements, 500);
+                  setTimeout(styleEzoicElements, 1000);
+                }
+              });
+            }
+            
             // Run immediately
             styleEzoicElements();
+            addClickListeners();
             
             // Run when DOM loads
-            document.addEventListener('DOMContentLoaded', styleEzoicElements);
+            document.addEventListener('DOMContentLoaded', function() {
+              styleEzoicElements();
+              addClickListeners();
+            });
             
             // Run very frequently to catch dynamic content
             setInterval(styleEzoicElements, 500);
             
-            // Watch for ANY changes to the DOM
+            // Watch for ANY changes to the DOM - more aggressive
             const observer = new MutationObserver(function(mutations) {
               let shouldRestyle = false;
               mutations.forEach(function(mutation) {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                   shouldRestyle = true;
                 }
+                if (mutation.type === 'attributes' && (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
+                  shouldRestyle = true;
+                }
               });
               if (shouldRestyle) {
+                setTimeout(styleEzoicElements, 50);
                 setTimeout(styleEzoicElements, 100);
               }
             });
