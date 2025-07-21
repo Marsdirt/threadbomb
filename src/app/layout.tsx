@@ -155,17 +155,52 @@ export default function RootLayout({
               box-shadow: 0 4px 8px rgba(0,0,0,0.4) !important;
               transform: translateY(-1px) !important;
             }
-            
-            /* Specific targeting for "Consent" and "Do Not Sell" text */
-            div[style*="position: fixed"] *:contains("Consent"),
-            div[style*="position: fixed"] *:contains("Do Not Sell"),
-            div[style*="position: fixed"] *:contains("Privacy"),
-            div[style*="bottom"] *:contains("Consent"),
-            div[style*="bottom"] *:contains("Do Not Sell"),
-            div[style*="bottom"] *:contains("Privacy") {
-              color: #ffffff !important;
-              background-color: #000000 !important;
+          `
+        }} />
+        
+        {/* JavaScript to force style Ezoic elements after they load */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            function styleEzoicElements() {
+              // Style all fixed position elements (likely consent banners)
+              const fixedElements = document.querySelectorAll('div[style*="position: fixed"], div[style*="bottom"]');
+              fixedElements.forEach(el => {
+                el.style.setProperty('background-color', '#000000', 'important');
+                el.style.setProperty('color', '#ffffff', 'important');
+                
+                // Style all children
+                const children = el.querySelectorAll('*');
+                children.forEach(child => {
+                  child.style.setProperty('color', '#ffffff', 'important');
+                  child.style.setProperty('background-color', 'transparent', 'important');
+                });
+                
+                // Style buttons specifically
+                const buttons = el.querySelectorAll('button, input[type="button"]');
+                buttons.forEach(btn => {
+                  btn.style.setProperty('background-color', '#333333', 'important');
+                  btn.style.setProperty('color', '#ffffff', 'important');
+                  btn.style.setProperty('border', '2px solid #555555', 'important');
+                  btn.style.setProperty('border-radius', '6px', 'important');
+                  btn.style.setProperty('padding', '8px 16px', 'important');
+                  btn.style.setProperty('margin', '4px', 'important');
+                  btn.style.setProperty('cursor', 'pointer', 'important');
+                });
+              });
             }
+            
+            // Run immediately
+            styleEzoicElements();
+            
+            // Run when DOM loads
+            document.addEventListener('DOMContentLoaded', styleEzoicElements);
+            
+            // Run periodically to catch dynamically loaded elements
+            setInterval(styleEzoicElements, 1000);
+            
+            // Watch for new elements being added
+            const observer = new MutationObserver(styleEzoicElements);
+            observer.observe(document.body, { childList: true, subtree: true });
           `
         }} />
       </head>
