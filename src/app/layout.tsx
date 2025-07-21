@@ -158,34 +158,82 @@ export default function RootLayout({
           `
         }} />
         
-        {/* JavaScript to force style Ezoic elements after they load */}
+        {/* JavaScript to force style ALL Ezoic elements after they load */}
         <script dangerouslySetInnerHTML={{
           __html: `
             function styleEzoicElements() {
-              // Style all fixed position elements (likely consent banners)
-              const fixedElements = document.querySelectorAll('div[style*="position: fixed"], div[style*="bottom"]');
-              fixedElements.forEach(el => {
-                el.style.setProperty('background-color', '#000000', 'important');
-                el.style.setProperty('color', '#ffffff', 'important');
-                
-                // Style all children
-                const children = el.querySelectorAll('*');
-                children.forEach(child => {
-                  child.style.setProperty('color', '#ffffff', 'important');
-                  child.style.setProperty('background-color', 'transparent', 'important');
+              console.log('Styling Ezoic elements...');
+              
+              // Target ALL possible fixed/absolute/modal elements
+              const selectors = [
+                'div[style*="position: fixed"]',
+                'div[style*="position: absolute"]',
+                'div[style*="bottom"]',
+                'div[style*="top"]',
+                'div[style*="z-index"]',
+                '.gk-consent-banner',
+                '[id*="gk-consent"]',
+                '[class*="gk-consent"]',
+                '[data-gk-consent]',
+                '[id*="consent"]',
+                '[class*="consent"]',
+                '[id*="privacy"]',
+                '[class*="privacy"]',
+                'div[role="dialog"]',
+                'div[role="alertdialog"]',
+                'div[aria-modal="true"]'
+              ];
+              
+              selectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(el => {
+                  // Force dark theme on the element
+                  el.style.setProperty('background-color', '#000000', 'important');
+                  el.style.setProperty('color', '#ffffff', 'important');
+                  el.style.setProperty('border-color', '#333333', 'important');
+                  
+                  // Style ALL descendants
+                  const allChildren = el.querySelectorAll('*');
+                  allChildren.forEach(child => {
+                    child.style.setProperty('color', '#ffffff', 'important');
+                    child.style.setProperty('background-color', 'transparent', 'important');
+                    
+                    // If it's a button or input
+                    if (child.tagName === 'BUTTON' || child.tagName === 'INPUT') {
+                      child.style.setProperty('background-color', '#333333', 'important');
+                      child.style.setProperty('color', '#ffffff', 'important');
+                      child.style.setProperty('border', '2px solid #555555', 'important');
+                      child.style.setProperty('border-radius', '6px', 'important');
+                      child.style.setProperty('padding', '8px 16px', 'important');
+                      child.style.setProperty('margin', '4px', 'important');
+                      child.style.setProperty('cursor', 'pointer', 'important');
+                      child.style.setProperty('font-weight', '500', 'important');
+                    }
+                  });
                 });
-                
-                // Style buttons specifically
-                const buttons = el.querySelectorAll('button, input[type="button"]');
-                buttons.forEach(btn => {
-                  btn.style.setProperty('background-color', '#333333', 'important');
-                  btn.style.setProperty('color', '#ffffff', 'important');
-                  btn.style.setProperty('border', '2px solid #555555', 'important');
-                  btn.style.setProperty('border-radius', '6px', 'important');
-                  btn.style.setProperty('padding', '8px 16px', 'important');
-                  btn.style.setProperty('margin', '4px', 'important');
-                  btn.style.setProperty('cursor', 'pointer', 'important');
-                });
+              });
+              
+              // Also check for iframes that might contain consent elements
+              const iframes = document.querySelectorAll('iframe');
+              iframes.forEach(iframe => {
+                try {
+                  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                  if (iframeDoc) {
+                    const iframeBody = iframeDoc.body;
+                    if (iframeBody) {
+                      iframeBody.style.setProperty('background-color', '#000000', 'important');
+                      iframeBody.style.setProperty('color', '#ffffff', 'important');
+                      
+                      const iframeElements = iframeDoc.querySelectorAll('*');
+                      iframeElements.forEach(el => {
+                        el.style.setProperty('color', '#ffffff', 'important');
+                        el.style.setProperty('background-color', 'transparent', 'important');
+                      });
+                    }
+                  }
+                } catch (e) {
+                  // Cross-origin iframe, can't access
+                }
               });
             }
             
@@ -195,12 +243,33 @@ export default function RootLayout({
             // Run when DOM loads
             document.addEventListener('DOMContentLoaded', styleEzoicElements);
             
-            // Run periodically to catch dynamically loaded elements
-            setInterval(styleEzoicElements, 1000);
+            // Run very frequently to catch dynamic content
+            setInterval(styleEzoicElements, 500);
             
-            // Watch for new elements being added
-            const observer = new MutationObserver(styleEzoicElements);
-            observer.observe(document.body, { childList: true, subtree: true });
+            // Watch for ANY changes to the DOM
+            const observer = new MutationObserver(function(mutations) {
+              let shouldRestyle = false;
+              mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                  shouldRestyle = true;
+                }
+              });
+              if (shouldRestyle) {
+                setTimeout(styleEzoicElements, 100);
+              }
+            });
+            observer.observe(document.body, { 
+              childList: true, 
+              subtree: true, 
+              attributes: true,
+              attributeFilter: ['style', 'class', 'id']
+            });
+            
+            // Listen for window resize which might trigger modal repositioning
+            window.addEventListener('resize', styleEzoicElements);
+            
+            // Listen for scroll events which might trigger banner changes
+            window.addEventListener('scroll', styleEzoicElements);
           `
         }} />
       </head>
