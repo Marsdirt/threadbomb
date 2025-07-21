@@ -164,7 +164,44 @@ export default function RootLayout({
             function styleEzoicElements() {
               console.log('Styling Ezoic elements...');
               
-              // Target ALL possible fixed/absolute/modal elements
+              // Force style on ALL elements that could be privacy-related
+              const allElements = document.querySelectorAll('*');
+              allElements.forEach(el => {
+                const styles = window.getComputedStyle(el);
+                const position = styles.position;
+                const zIndex = parseInt(styles.zIndex) || 0;
+                
+                // If it's positioned and has high z-index (likely a modal/popup)
+                if ((position === 'fixed' || position === 'absolute') && zIndex > 1000) {
+                  console.log('Found high z-index element:', el);
+                  
+                  // Force dark theme with inline styles
+                  el.style.backgroundColor = '#000000';
+                  el.style.color = '#ffffff';
+                  el.style.border = '1px solid #333333';
+                  
+                  // Style ALL children aggressively
+                  const allChildren = el.querySelectorAll('*');
+                  allChildren.forEach(child => {
+                    child.style.color = '#ffffff';
+                    child.style.backgroundColor = 'transparent';
+                    
+                    // Force button styling
+                    if (child.tagName === 'BUTTON' || child.tagName === 'INPUT') {
+                      child.style.backgroundColor = '#333333';
+                      child.style.color = '#ffffff';
+                      child.style.border = '2px solid #555555';
+                      child.style.borderRadius = '6px';
+                      child.style.padding = '8px 16px';
+                      child.style.margin = '4px';
+                      child.style.cursor = 'pointer';
+                      child.style.fontWeight = '500';
+                    }
+                  });
+                }
+              });
+              
+              // Also target specific selectors
               const selectors = [
                 'div[style*="position: fixed"]',
                 'div[style*="position: absolute"]',
@@ -187,53 +224,30 @@ export default function RootLayout({
               selectors.forEach(selector => {
                 const elements = document.querySelectorAll(selector);
                 elements.forEach(el => {
-                  // Force dark theme on the element
-                  el.style.setProperty('background-color', '#000000', 'important');
-                  el.style.setProperty('color', '#ffffff', 'important');
-                  el.style.setProperty('border-color', '#333333', 'important');
+                  // Force dark theme with inline styles (stronger than CSS)
+                  el.style.backgroundColor = '#000000';
+                  el.style.color = '#ffffff';
+                  el.style.border = '1px solid #333333';
                   
-                  // Style ALL descendants
+                  // Style ALL descendants with inline styles
                   const allChildren = el.querySelectorAll('*');
                   allChildren.forEach(child => {
-                    child.style.setProperty('color', '#ffffff', 'important');
-                    child.style.setProperty('background-color', 'transparent', 'important');
+                    child.style.color = '#ffffff';
+                    child.style.backgroundColor = 'transparent';
                     
                     // If it's a button or input
                     if (child.tagName === 'BUTTON' || child.tagName === 'INPUT') {
-                      child.style.setProperty('background-color', '#333333', 'important');
-                      child.style.setProperty('color', '#ffffff', 'important');
-                      child.style.setProperty('border', '2px solid #555555', 'important');
-                      child.style.setProperty('border-radius', '6px', 'important');
-                      child.style.setProperty('padding', '8px 16px', 'important');
-                      child.style.setProperty('margin', '4px', 'important');
-                      child.style.setProperty('cursor', 'pointer', 'important');
-                      child.style.setProperty('font-weight', '500', 'important');
+                      child.style.backgroundColor = '#333333';
+                      child.style.color = '#ffffff';
+                      child.style.border = '2px solid #555555';
+                      child.style.borderRadius = '6px';
+                      child.style.padding = '8px 16px';
+                      child.style.margin = '4px';
+                      child.style.cursor = 'pointer';
+                      child.style.fontWeight = '500';
                     }
                   });
                 });
-              });
-              
-              // Also check for iframes that might contain consent elements
-              const iframes = document.querySelectorAll('iframe');
-              iframes.forEach(iframe => {
-                try {
-                  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                  if (iframeDoc) {
-                    const iframeBody = iframeDoc.body;
-                    if (iframeBody) {
-                      iframeBody.style.setProperty('background-color', '#000000', 'important');
-                      iframeBody.style.setProperty('color', '#ffffff', 'important');
-                      
-                      const iframeElements = iframeDoc.querySelectorAll('*');
-                      iframeElements.forEach(el => {
-                        el.style.setProperty('color', '#ffffff', 'important');
-                        el.style.setProperty('background-color', 'transparent', 'important');
-                      });
-                    }
-                  }
-                } catch (e) {
-                  // Cross-origin iframe, can't access
-                }
               });
             }
             
@@ -245,14 +259,12 @@ export default function RootLayout({
                 
                 // If they clicked "Do Not Sell" or similar text
                 if (text.includes('Do Not Sell') || text.includes('Privacy') || text.includes('Consent')) {
-                  console.log('Privacy button clicked, will style popup');
+                  console.log('Privacy button clicked, will style popup aggressively');
                   
-                  // Style immediately and then repeatedly to catch the popup
-                  setTimeout(styleEzoicElements, 50);
-                  setTimeout(styleEzoicElements, 100);
-                  setTimeout(styleEzoicElements, 200);
-                  setTimeout(styleEzoicElements, 500);
-                  setTimeout(styleEzoicElements, 1000);
+                  // Style immediately and repeatedly with more attempts
+                  for (let i = 0; i < 20; i++) {
+                    setTimeout(styleEzoicElements, i * 100);
+                  }
                 }
               });
             }
@@ -268,36 +280,24 @@ export default function RootLayout({
             });
             
             // Run very frequently to catch dynamic content
-            setInterval(styleEzoicElements, 500);
+            setInterval(styleEzoicElements, 200);
             
-            // Watch for ANY changes to the DOM - more aggressive
+            // Watch for ANY changes to the DOM - super aggressive
             const observer = new MutationObserver(function(mutations) {
-              let shouldRestyle = false;
               mutations.forEach(function(mutation) {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                  shouldRestyle = true;
-                }
-                if (mutation.type === 'attributes' && (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
-                  shouldRestyle = true;
+                  // Style immediately when new nodes are added
+                  setTimeout(styleEzoicElements, 0);
+                  setTimeout(styleEzoicElements, 50);
+                  setTimeout(styleEzoicElements, 100);
                 }
               });
-              if (shouldRestyle) {
-                setTimeout(styleEzoicElements, 50);
-                setTimeout(styleEzoicElements, 100);
-              }
             });
             observer.observe(document.body, { 
               childList: true, 
               subtree: true, 
-              attributes: true,
-              attributeFilter: ['style', 'class', 'id']
+              attributes: true
             });
-            
-            // Listen for window resize which might trigger modal repositioning
-            window.addEventListener('resize', styleEzoicElements);
-            
-            // Listen for scroll events which might trigger banner changes
-            window.addEventListener('scroll', styleEzoicElements);
           `
         }} />
       </head>
