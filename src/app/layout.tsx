@@ -70,10 +70,14 @@ export default function RootLayout({
           }}
         />
         
-        {/* Custom CSS for Ezoic consent banner dark theme */}
+        {/* Enhanced CSS for Ezoic consent banner dark theme */}
         <style dangerouslySetInnerHTML={{
           __html: `
-            /* Ezoic consent banner dark theme styling */
+            /* More aggressive targeting for consent banner */
+            div[style*="position: fixed"],
+            div[style*="bottom"],
+            div[style*="left"],
+            div[style*="right"],
             .gk-consent-banner,
             .gk-consent-banner-container,
             [id*="gk-consent"],
@@ -81,43 +85,55 @@ export default function RootLayout({
             [data-gk-consent],
             .consent-banner,
             #consent-banner,
-            .privacy-banner {
+            .privacy-banner,
+            [id*="consent"],
+            [class*="consent"],
+            [id*="privacy"],
+            [class*="privacy"] {
               background-color: #000000 !important;
               color: #ffffff !important;
               border-color: #333333 !important;
             }
             
-            .gk-consent-banner p,
-            .gk-consent-banner div,
-            .gk-consent-banner span,
-            [id*="gk-consent"] p,
-            [id*="gk-consent"] div,
-            [id*="gk-consent"] span {
+            /* Target all text elements in consent banners */
+            div[style*="position: fixed"] *,
+            div[style*="bottom"] *,
+            .gk-consent-banner *,
+            .gk-consent-banner-container *,
+            [id*="gk-consent"] *,
+            [class*="gk-consent"] *,
+            [data-gk-consent] *,
+            .consent-banner *,
+            #consent-banner *,
+            .privacy-banner *,
+            [id*="consent"] *,
+            [class*="consent"] *,
+            [id*="privacy"] *,
+            [class*="privacy"] * {
               color: #ffffff !important;
               background-color: transparent !important;
             }
             
+            /* Button styling */
+            div[style*="position: fixed"] button,
+            div[style*="bottom"] button,
             .gk-consent-banner button,
             [id*="gk-consent"] button,
-            .consent-banner button {
+            .consent-banner button,
+            [id*="consent"] button,
+            [class*="consent"] button {
               background-color: #333333 !important;
               color: #ffffff !important;
               border: 1px solid #555555 !important;
               border-radius: 4px !important;
             }
             
+            /* Button hover */
+            div[style*="position: fixed"] button:hover,
+            div[style*="bottom"] button:hover,
             .gk-consent-banner button:hover,
             [id*="gk-consent"] button:hover {
               background-color: #555555 !important;
-              color: #ffffff !important;
-            }
-            
-            /* Target any privacy-related elements */
-            [class*="privacy"],
-            [id*="privacy"],
-            [class*="consent"],
-            [id*="consent"] {
-              background-color: #000000 !important;
               color: #ffffff !important;
             }
           `
