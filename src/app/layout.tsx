@@ -114,6 +114,12 @@ export default function RootLayout({
               background-color: transparent !important;
             }
             
+            /* Nuclear option - force visibility with filters */
+            div[style*="position: fixed"],
+            div[style*="position: absolute"] {
+              filter: invert(1) hue-rotate(180deg) !important;
+            }
+            
             /* Super aggressive button targeting - only for consent banners */
             div[style*="position: fixed"] button,
             div[style*="bottom"] button,
@@ -140,6 +146,7 @@ export default function RootLayout({
               margin: 4px !important;
               min-height: 36px !important;
               box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+              filter: none !important;
             }
             
             /* Button hover effects - only for consent banners */
@@ -158,13 +165,13 @@ export default function RootLayout({
           `
         }} />
         
-        {/* JavaScript to force style ALL Ezoic elements after they load */}
+        {/* Nuclear JavaScript approach */}
         <script dangerouslySetInnerHTML={{
           __html: `
             function styleEzoicElements() {
-              console.log('Styling Ezoic elements...');
+              console.log('Nuclear styling approach...');
               
-              // Force style on ALL elements that could be privacy-related
+              // Target ALL elements and force styling with setProperty
               const allElements = document.querySelectorAll('*');
               allElements.forEach(el => {
                 const styles = window.getComputedStyle(el);
@@ -173,130 +180,63 @@ export default function RootLayout({
                 
                 // If it's positioned and has high z-index (likely a modal/popup)
                 if ((position === 'fixed' || position === 'absolute') && zIndex > 1000) {
-                  console.log('Found high z-index element:', el);
+                  console.log('Found modal element:', el);
                   
-                  // Force dark theme with inline styles
-                  el.style.backgroundColor = '#000000';
-                  el.style.color = '#ffffff';
-                  el.style.border = '1px solid #333333';
+                  // Use setProperty with important flag
+                  el.style.setProperty('background-color', '#000000', 'important');
+                  el.style.setProperty('color', '#ffffff', 'important');
+                  el.style.setProperty('border-color', '#333333', 'important');
                   
-                  // Style ALL children aggressively
+                  // Style ALL descendants with setProperty
                   const allChildren = el.querySelectorAll('*');
                   allChildren.forEach(child => {
-                    child.style.color = '#ffffff';
-                    child.style.backgroundColor = 'transparent';
+                    child.style.setProperty('color', '#ffffff', 'important');
+                    child.style.setProperty('background-color', 'transparent', 'important');
                     
-                    // Force button styling
+                    // Force button styling with setProperty
                     if (child.tagName === 'BUTTON' || child.tagName === 'INPUT') {
-                      child.style.backgroundColor = '#333333';
-                      child.style.color = '#ffffff';
-                      child.style.border = '2px solid #555555';
-                      child.style.borderRadius = '6px';
-                      child.style.padding = '8px 16px';
-                      child.style.margin = '4px';
-                      child.style.cursor = 'pointer';
-                      child.style.fontWeight = '500';
+                      child.style.setProperty('background-color', '#333333', 'important');
+                      child.style.setProperty('color', '#ffffff', 'important');
+                      child.style.setProperty('border', '2px solid #555555', 'important');
+                      child.style.setProperty('border-radius', '6px', 'important');
+                      child.style.setProperty('padding', '8px 16px', 'important');
+                      child.style.setProperty('margin', '4px', 'important');
+                      child.style.setProperty('cursor', 'pointer', 'important');
+                      child.style.setProperty('font-weight', '500', 'important');
                     }
                   });
                 }
               });
-              
-              // Also target specific selectors
-              const selectors = [
-                'div[style*="position: fixed"]',
-                'div[style*="position: absolute"]',
-                'div[style*="bottom"]',
-                'div[style*="top"]',
-                'div[style*="z-index"]',
-                '.gk-consent-banner',
-                '[id*="gk-consent"]',
-                '[class*="gk-consent"]',
-                '[data-gk-consent]',
-                '[id*="consent"]',
-                '[class*="consent"]',
-                '[id*="privacy"]',
-                '[class*="privacy"]',
-                'div[role="dialog"]',
-                'div[role="alertdialog"]',
-                'div[aria-modal="true"]'
-              ];
-              
-              selectors.forEach(selector => {
-                const elements = document.querySelectorAll(selector);
-                elements.forEach(el => {
-                  // Force dark theme with inline styles (stronger than CSS)
-                  el.style.backgroundColor = '#000000';
-                  el.style.color = '#ffffff';
-                  el.style.border = '1px solid #333333';
-                  
-                  // Style ALL descendants with inline styles
-                  const allChildren = el.querySelectorAll('*');
-                  allChildren.forEach(child => {
-                    child.style.color = '#ffffff';
-                    child.style.backgroundColor = 'transparent';
-                    
-                    // If it's a button or input
-                    if (child.tagName === 'BUTTON' || child.tagName === 'INPUT') {
-                      child.style.backgroundColor = '#333333';
-                      child.style.color = '#ffffff';
-                      child.style.border = '2px solid #555555';
-                      child.style.borderRadius = '6px';
-                      child.style.padding = '8px 16px';
-                      child.style.margin = '4px';
-                      child.style.cursor = 'pointer';
-                      child.style.fontWeight = '500';
-                    }
-                  });
-                });
-              });
             }
             
-            // Add click listeners to "Do Not Sell" buttons to catch popup creation
-            function addClickListeners() {
-              document.addEventListener('click', function(e) {
-                const target = e.target;
-                const text = target.textContent || target.innerText || '';
-                
-                // If they clicked "Do Not Sell" or similar text
-                if (text.includes('Do Not Sell') || text.includes('Privacy') || text.includes('Consent')) {
-                  console.log('Privacy button clicked, will style popup aggressively');
-                  
-                  // Style immediately and repeatedly with more attempts
-                  for (let i = 0; i < 20; i++) {
-                    setTimeout(styleEzoicElements, i * 100);
-                  }
-                }
-              });
-            }
-            
-            // Run immediately
+            // Run immediately and very frequently
             styleEzoicElements();
-            addClickListeners();
+            setInterval(styleEzoicElements, 100);
             
-            // Run when DOM loads
-            document.addEventListener('DOMContentLoaded', function() {
-              styleEzoicElements();
-              addClickListeners();
+            // Listen for clicks on "Do Not Sell"
+            document.addEventListener('click', function(e) {
+              const target = e.target;
+              const text = target.textContent || target.innerText || '';
+              
+              if (text.includes('Do Not Sell') || text.includes('Privacy') || text.includes('Consent')) {
+                console.log('Privacy clicked - nuclear styling mode');
+                
+                // Run styling 50 times with short intervals
+                for (let i = 0; i < 50; i++) {
+                  setTimeout(styleEzoicElements, i * 50);
+                }
+              }
             });
             
-            // Run very frequently to catch dynamic content
-            setInterval(styleEzoicElements, 200);
-            
-            // Watch for ANY changes to the DOM - super aggressive
-            const observer = new MutationObserver(function(mutations) {
-              mutations.forEach(function(mutation) {
-                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                  // Style immediately when new nodes are added
-                  setTimeout(styleEzoicElements, 0);
-                  setTimeout(styleEzoicElements, 50);
-                  setTimeout(styleEzoicElements, 100);
-                }
-              });
+            // Super aggressive DOM observer
+            const observer = new MutationObserver(function() {
+              styleEzoicElements();
             });
             observer.observe(document.body, { 
               childList: true, 
               subtree: true, 
-              attributes: true
+              attributes: true,
+              attributeFilter: ['style', 'class', 'id']
             });
           `
         }} />
