@@ -69,6 +69,59 @@ export default function RootLayout({
             `,
           }}
         />
+        
+        {/* Custom CSS for Ezoic consent banner dark theme */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            /* Ezoic consent banner dark theme styling */
+            .gk-consent-banner,
+            .gk-consent-banner-container,
+            [id*="gk-consent"],
+            [class*="gk-consent"],
+            [data-gk-consent],
+            .consent-banner,
+            #consent-banner,
+            .privacy-banner {
+              background-color: #000000 !important;
+              color: #ffffff !important;
+              border-color: #333333 !important;
+            }
+            
+            .gk-consent-banner p,
+            .gk-consent-banner div,
+            .gk-consent-banner span,
+            [id*="gk-consent"] p,
+            [id*="gk-consent"] div,
+            [id*="gk-consent"] span {
+              color: #ffffff !important;
+              background-color: transparent !important;
+            }
+            
+            .gk-consent-banner button,
+            [id*="gk-consent"] button,
+            .consent-banner button {
+              background-color: #333333 !important;
+              color: #ffffff !important;
+              border: 1px solid #555555 !important;
+              border-radius: 4px !important;
+            }
+            
+            .gk-consent-banner button:hover,
+            [id*="gk-consent"] button:hover {
+              background-color: #555555 !important;
+              color: #ffffff !important;
+            }
+            
+            /* Target any privacy-related elements */
+            [class*="privacy"],
+            [id*="privacy"],
+            [class*="consent"],
+            [id*="consent"] {
+              background-color: #000000 !important;
+              color: #ffffff !important;
+            }
+          `
+        }} />
       </head>
       <body className="font-body antialiased bg-black text-white">
         <div className="flex justify-center">
