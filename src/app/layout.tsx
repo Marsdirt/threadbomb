@@ -114,12 +114,6 @@ export default function RootLayout({
               background-color: transparent !important;
             }
             
-            /* Nuclear option - force visibility with filters */
-            div[style*="position: fixed"],
-            div[style*="position: absolute"] {
-              filter: invert(1) hue-rotate(180deg) !important;
-            }
-            
             /* Super aggressive button targeting - only for consent banners */
             div[style*="position: fixed"] button,
             div[style*="bottom"] button,
@@ -146,7 +140,6 @@ export default function RootLayout({
               margin: 4px !important;
               min-height: 36px !important;
               box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-              filter: none !important;
             }
             
             /* Button hover effects - only for consent banners */
@@ -165,13 +158,13 @@ export default function RootLayout({
           `
         }} />
         
-        {/* Nuclear JavaScript approach */}
+        {/* Nuclear JavaScript approach with inline styles */}
         <script dangerouslySetInnerHTML={{
           __html: `
             function styleEzoicElements() {
               console.log('Nuclear styling approach...');
               
-              // Target ALL elements and force styling with setProperty
+              // Target ALL elements and force styling
               const allElements = document.querySelectorAll('*');
               allElements.forEach(el => {
                 const styles = window.getComputedStyle(el);
@@ -182,30 +175,60 @@ export default function RootLayout({
                 if ((position === 'fixed' || position === 'absolute') && zIndex > 1000) {
                   console.log('Found modal element:', el);
                   
-                  // Use setProperty with important flag
-                  el.style.setProperty('background-color', '#000000', 'important');
-                  el.style.setProperty('color', '#ffffff', 'important');
-                  el.style.setProperty('border-color', '#333333', 'important');
+                  // Force inline styles (stronger than CSS)
+                  el.style.backgroundColor = '#000000';
+                  el.style.color = '#ffffff';
+                  el.style.border = '1px solid #333333';
                   
-                  // Style ALL descendants with setProperty
+                  // Style ALL descendants with inline styles
                   const allChildren = el.querySelectorAll('*');
                   allChildren.forEach(child => {
-                    child.style.setProperty('color', '#ffffff', 'important');
-                    child.style.setProperty('background-color', 'transparent', 'important');
+                    child.style.color = '#ffffff';
+                    child.style.backgroundColor = 'transparent';
                     
-                    // Force button styling with setProperty
+                    // Force button styling with inline styles
                     if (child.tagName === 'BUTTON' || child.tagName === 'INPUT') {
-                      child.style.setProperty('background-color', '#333333', 'important');
-                      child.style.setProperty('color', '#ffffff', 'important');
-                      child.style.setProperty('border', '2px solid #555555', 'important');
-                      child.style.setProperty('border-radius', '6px', 'important');
-                      child.style.setProperty('padding', '8px 16px', 'important');
-                      child.style.setProperty('margin', '4px', 'important');
-                      child.style.setProperty('cursor', 'pointer', 'important');
-                      child.style.setProperty('font-weight', '500', 'important');
+                      child.style.backgroundColor = '#333333';
+                      child.style.color = '#ffffff';
+                      child.style.border = '2px solid #555555';
+                      child.style.borderRadius = '6px';
+                      child.style.padding = '8px 16px';
+                      child.style.margin = '4px';
+                      child.style.cursor = 'pointer';
+                      child.style.fontWeight = '500';
                     }
                   });
                 }
+              });
+              
+              // Also target specific selectors with inline styles
+              const selectors = [
+                'div[style*="position: fixed"]',
+                'div[style*="bottom"]'
+              ];
+              
+              selectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(el => {
+                  el.style.backgroundColor = '#000000';
+                  el.style.color = '#ffffff';
+                  
+                  const children = el.querySelectorAll('*');
+                  children.forEach(child => {
+                    child.style.color = '#ffffff';
+                    child.style.backgroundColor = 'transparent';
+                    
+                    if (child.tagName === 'BUTTON' || child.tagName === 'INPUT') {
+                      child.style.backgroundColor = '#333333';
+                      child.style.color = '#ffffff';
+                      child.style.border = '2px solid #555555';
+                      child.style.borderRadius = '6px';
+                      child.style.padding = '8px 16px';
+                      child.style.margin = '4px';
+                      child.style.cursor = 'pointer';
+                    }
+                  });
+                });
               });
             }
             
@@ -221,9 +244,9 @@ export default function RootLayout({
               if (text.includes('Do Not Sell') || text.includes('Privacy') || text.includes('Consent')) {
                 console.log('Privacy clicked - nuclear styling mode');
                 
-                // Run styling 50 times with short intervals
-                for (let i = 0; i < 50; i++) {
-                  setTimeout(styleEzoicElements, i * 50);
+                // Run styling 100 times with short intervals
+                for (let i = 0; i < 100; i++) {
+                  setTimeout(styleEzoicElements, i * 25);
                 }
               }
             });
