@@ -455,6 +455,157 @@ export default function RootLayout({
             });
           `
         }} />
+        
+        {/* Simplified CSS - just force black backgrounds on privacy elements */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            /* Force black background on ALL positioned elements that could be privacy-related */
+            div[style*="position: fixed"],
+            div[style*="position: absolute"],
+            div[style*="bottom"],
+            div[style*="top"],
+            div[style*="left"],
+            div[style*="right"],
+            .gk-consent-banner,
+            .gk-consent-banner-container,
+            [id*="gk-consent"],
+            [class*="gk-consent"],
+            [data-gk-consent],
+            .consent-banner,
+            #consent-banner,
+            .privacy-banner,
+            [id*="consent"],
+            [class*="consent"],
+            [id*="privacy"],
+            [class*="privacy"],
+            div[role="dialog"],
+            div[role="alertdialog"],
+            div[aria-modal="true"] {
+              background: #000000 !important;
+              background-color: #000000 !important;
+              border: 1px solid #333333 !important;
+            }
+            
+            /* Also force black background on their children */
+            div[style*="position: fixed"] *,
+            div[style*="position: absolute"] *,
+            div[style*="bottom"] *,
+            .gk-consent-banner *,
+            [id*="gk-consent"] *,
+            [class*="gk-consent"] *,
+            [id*="consent"] *,
+            [class*="consent"] *,
+            [id*="privacy"] *,
+            [class*="privacy"] *,
+            div[role="dialog"] *,
+            div[role="alertdialog"] *,
+            div[aria-modal="true"] * {
+              background-color: #000000 !important;
+            }
+            
+            /* Style buttons to be visible */
+            div[style*="position: fixed"] button,
+            div[style*="position: absolute"] button,
+            div[style*="bottom"] button,
+            [id*="consent"] button,
+            [class*="consent"] button,
+            [id*="privacy"] button,
+            [class*="privacy"] button {
+              background: #333333 !important;
+              background-color: #333333 !important;
+              color: #ffffff !important;
+              border: 2px solid #555555 !important;
+              border-radius: 6px !important;
+              padding: 8px 16px !important;
+              margin: 4px !important;
+              cursor: pointer !important;
+            }
+          `
+        }} />
+        
+        {/* Simplified JavaScript - just force black backgrounds */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            function forceBlackBackgrounds() {
+              console.log('Forcing black backgrounds on privacy elements...');
+              
+              // Target ALL positioned elements and force black background
+              const allElements = document.querySelectorAll('*');
+              allElements.forEach(el => {
+                const styles = window.getComputedStyle(el);
+                const position = styles.position;
+                const zIndex = parseInt(styles.zIndex) || 0;
+                
+                // If it's positioned and might be a modal/popup
+                if ((position === 'fixed' || position === 'absolute') && zIndex > 999) {
+                  console.log('Found positioned element, forcing black background:', el);
+                  
+                  // Just force black background - don't worry about text color
+                  el.style.setProperty('background-color', '#000000', 'important');
+                  el.style.setProperty('background', '#000000', 'important');
+                  
+                  // Force black background on all children too
+                  const children = el.querySelectorAll('*');
+                  children.forEach(child => {
+                    child.style.setProperty('background-color', '#000000', 'important');
+                    child.style.setProperty('background', '#000000', 'important');
+                  });
+                }
+              });
+              
+              // Also target specific selectors
+              const selectors = [
+                'div[style*="position: fixed"]',
+                'div[style*="position: absolute"]',
+                'div[style*="bottom"]',
+                '[id*="consent"]',
+                '[class*="consent"]',
+                '[id*="privacy"]',
+                '[class*="privacy"]'
+              ];
+              
+              selectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(el => {
+                  el.style.setProperty('background-color', '#000000', 'important');
+                  el.style.setProperty('background', '#000000', 'important');
+                  
+                  // Force black on all children
+                  const children = el.querySelectorAll('*');
+                  children.forEach(child => {
+                    child.style.setProperty('background-color', '#000000', 'important');
+                    child.style.setProperty('background', '#000000', 'important');
+                  });
+                });
+              });
+            }
+            
+            // Run immediately and frequently
+            forceBlackBackgrounds();
+            setInterval(forceBlackBackgrounds, 100);
+            
+            // Run extra times when privacy buttons are clicked
+            document.addEventListener('click', function(e) {
+              const text = (e.target.textContent || '').toLowerCase();
+              if (text.includes('do not sell') || text.includes('privacy') || text.includes('consent')) {
+                console.log('Privacy button clicked - forcing black backgrounds');
+                
+                // Force black backgrounds multiple times
+                for (let i = 0; i < 50; i++) {
+                  setTimeout(forceBlackBackgrounds, i * 50);
+                }
+              }
+            });
+            
+            // Watch for DOM changes
+            const observer = new MutationObserver(forceBlackBackgrounds);
+            observer.observe(document.body, { 
+              childList: true, 
+              subtree: true, 
+              attributes: true
+            });
+          `
+        }} />
       </head>
       <body className="font-body antialiased bg-black text-white">
         <div className="flex justify-center pt-4 px-4 md:pt-6">
