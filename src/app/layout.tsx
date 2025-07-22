@@ -188,6 +188,20 @@ export default function RootLayout({
         </div>
         {children}
         <Toaster />
+        
+        {/* Footer with privacy policy link */}
+        <footer className="mt-12 py-6 text-center border-t border-gray-800">
+          <div className="text-sm text-gray-500">
+            <a 
+              href="/privacy-policy" 
+              className="hover:text-gray-300 transition-colors underline"
+            >
+              Privacy Policy
+            </a>
+            {" | "}
+            <span>© 2025 ThreadBomb</span>
+          </div>
+        </footer>
       </body>
     </html>
   );
