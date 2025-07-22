@@ -50,6 +50,19 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable}`}>
       <head>
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-HQMD19LKCX"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-HQMD19LKCX');
+            `,
+          }}
+        />
+        
         {/* Ezoic Privacy Scripts */}
         <script
           src="https://cmp.gatekeeperconsent.com/min.js"
