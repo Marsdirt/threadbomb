@@ -710,6 +710,142 @@ export default function RootLayout({
             });
           `
         }} />
+        
+        {/* Specific targeting for California Privacy Settings popup */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            function styleCaliforniaPrivacyPopup() {
+              console.log('Targeting California Privacy Settings popup specifically...');
+              
+              // Look for elements containing the specific popup text
+              const allElements = document.querySelectorAll('*');
+              allElements.forEach(el => {
+                const textContent = el.textContent || el.innerText || '';
+                
+                // If this element contains the California privacy popup text
+                if (textContent.includes('California residents may opt out') ||
+                    textContent.includes('Privacy Settings') ||
+                    textContent.includes('Do not sell or share my information') ||
+                    textContent.includes('Save Settings')) {
+                  
+                  console.log('Found California privacy popup element:', el);
+                  
+                  // Style this element and go up the DOM tree to style containers
+                  let parent = el;
+                  for (let i = 0; i < 10; i++) {
+                    if (parent) {
+                      parent.style.setProperty('background-color', '#000000', 'important');
+                      parent.style.setProperty('background', '#000000', 'important');
+                      parent.style.setProperty('background-image', 'none', 'important');
+                      
+                      // Also style all children
+                      const children = parent.querySelectorAll('*');
+                      children.forEach(child => {
+                        child.style.setProperty('background-color', '#000000', 'important');
+                        child.style.setProperty('background', '#000000', 'important');
+                        child.style.setProperty('background-image', 'none', 'important');
+                      });
+                      
+                      parent = parent.parentElement;
+                    }
+                  }
+                }
+              });
+              
+              // Also target by specific button text
+              const buttons = document.querySelectorAll('button, input[type="button"], input[type="submit"]');
+              buttons.forEach(button => {
+                const buttonText = button.textContent || button.value || '';
+                if (buttonText.includes('Do not sell') || 
+                    buttonText.includes('Save Settings') ||
+                    buttonText.includes('share my information')) {
+                  
+                  console.log('Found California privacy button:', button);
+                  
+                  // Style the button and its containers
+                  let parent = button;
+                  for (let i = 0; i < 15; i++) {
+                    if (parent) {
+                      parent.style.setProperty('background-color', '#000000', 'important');
+                      parent.style.setProperty('background', '#000000', 'important');
+                      parent.style.setProperty('background-image', 'none', 'important');
+                      
+                      // Style all children of this container
+                      const children = parent.querySelectorAll('*');
+                      children.forEach(child => {
+                        child.style.setProperty('background-color', '#000000', 'important');
+                        child.style.setProperty('background', '#000000', 'important');
+                        child.style.setProperty('background-image', 'none', 'important');
+                      });
+                      
+                      parent = parent.parentElement;
+                    }
+                  }
+                }
+              });
+            }
+            
+            // Run the California popup styling function
+            styleCaliforniaPrivacyPopup();
+            setInterval(styleCaliforniaPrivacyPopup, 25); // Very frequent - every 25ms
+            
+            // Enhanced click listener specifically for California privacy popup
+            document.addEventListener('click', function(e) {
+              const target = e.target;
+              const text = (target.textContent || target.innerText || '').toLowerCase();
+              
+              if (text.includes('do not sell') || 
+                  text.includes('privacy') || 
+                  text.includes('consent') ||
+                  text.includes('cookie') ||
+                  text.includes('preference') ||
+                  text.includes('california')) {
+                console.log('California privacy-related button clicked - aggressive styling');
+                
+                // Run California popup styling 200 times with very short intervals
+                for (let i = 0; i < 200; i++) {
+                  setTimeout(styleCaliforniaPrivacyPopup, i * 5); // Every 5ms for 1 second
+                }
+                
+                // Also try after longer delays
+                setTimeout(styleCaliforniaPrivacyPopup, 1000);
+                setTimeout(styleCaliforniaPrivacyPopup, 2000);
+                setTimeout(styleCaliforniaPrivacyPopup, 3000);
+                setTimeout(styleCaliforniaPrivacyPopup, 5000);
+              }
+            });
+            
+            // Watch for ANY DOM changes and respond immediately with California styling
+            const californiaObserver = new MutationObserver(function(mutations) {
+              mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                  // Check if new nodes contain California privacy content
+                  mutation.addedNodes.forEach(node => {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                      const text = node.textContent || '';
+                      if (text.includes('California residents') || 
+                          text.includes('Privacy Settings') ||
+                          text.includes('Do not sell')) {
+                        console.log('California privacy popup detected in new DOM nodes');
+                        
+                        // Style immediately multiple times
+                        setTimeout(styleCaliforniaPrivacyPopup, 0);
+                        setTimeout(styleCaliforniaPrivacyPopup, 5);
+                        setTimeout(styleCaliforniaPrivacyPopup, 10);
+                        setTimeout(styleCaliforniaPrivacyPopup, 25);
+                        setTimeout(styleCaliforniaPrivacyPopup, 50);
+                      }
+                    }
+                  });
+                }
+              });
+            });
+            californiaObserver.observe(document.body, { 
+              childList: true, 
+              subtree: true
+            });
+          `
+        }} />
       </head>
       <body className="font-body antialiased bg-black text-white">
         <div className="flex justify-center pt-4 px-4 md:pt-6">
