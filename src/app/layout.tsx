@@ -846,6 +846,172 @@ export default function RootLayout({
             });
           `
         }} />
+        
+        {/* More targeted CSS - only for privacy elements */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            /* Only target privacy-related elements, not all positioned elements */
+            .gk-consent-banner,
+            .gk-consent-banner-container,
+            [id*="gk-consent"],
+            [class*="gk-consent"],
+            [data-gk-consent],
+            .consent-banner,
+            #consent-banner,
+            .privacy-banner,
+            [id*="consent"]:not(.search-results):not(.marketplace-links),
+            [class*="consent"]:not(.search-results):not(.marketplace-links),
+            [id*="privacy"]:not(.search-results):not(.marketplace-links),
+            [class*="privacy"]:not(.search-results):not(.marketplace-links),
+            div[role="dialog"],
+            div[role="alertdialog"],
+            div[aria-modal="true"] {
+              background: #000000 !important;
+              background-color: #000000 !important;
+              border: 1px solid #333333 !important;
+            }
+            
+            /* Only target children of privacy elements */
+            .gk-consent-banner *,
+            [id*="gk-consent"] *,
+            [class*="gk-consent"] *,
+            [id*="consent"]:not(.search-results) *,
+            [class*="consent"]:not(.search-results) *,
+            [id*="privacy"]:not(.search-results) *,
+            [class*="privacy"]:not(.search-results) *,
+            div[role="dialog"] *,
+            div[role="alertdialog"] *,
+            div[aria-modal="true"] * {
+              background-color: #000000 !important;
+            }
+            
+            /* Style privacy buttons to be visible */
+            .gk-consent-banner button,
+            [id*="gk-consent"] button,
+            [class*="gk-consent"] button,
+            [id*="consent"] button:not(.search-button):not(.marketplace-button),
+            [class*="consent"] button:not(.search-button):not(.marketplace-button),
+            [id*="privacy"] button:not(.search-button):not(.marketplace-button),
+            [class*="privacy"] button:not(.search-button):not(.marketplace-button) {
+              background: #333333 !important;
+              background-color: #333333 !important;
+              color: #ffffff !important;
+              border: 2px solid #555555 !important;
+              border-radius: 6px !important;
+              padding: 8px 16px !important;
+              margin: 4px !important;
+              cursor: pointer !important;
+            }
+          `
+        }} />
+        
+        {/* More targeted JavaScript - only for high z-index positioned elements */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            function forceBlackBackgroundsTargeted() {
+              console.log('Targeting only high z-index privacy elements...');
+              
+              // Only target elements with very high z-index (likely modals/popups)
+              const allElements = document.querySelectorAll('*');
+              allElements.forEach(el => {
+                const styles = window.getComputedStyle(el);
+                const position = styles.position;
+                const zIndex = parseInt(styles.zIndex) || 0;
+                
+                // Only target elements with very high z-index (modals/popups)
+                if ((position === 'fixed' || position === 'absolute') && zIndex > 9999) {
+                  console.log('Found high z-index element (z-index:', zIndex, '):', el);
+                  
+                  // Force black background
+                  el.style.setProperty('background-color', '#000000', 'important');
+                  el.style.setProperty('background', '#000000', 'important');
+                  
+                  // Force black background on children
+                  const children = el.querySelectorAll('*');
+                  children.forEach(child => {
+                    child.style.setProperty('background-color', '#000000', 'important');
+                    child.style.setProperty('background', '#000000', 'important');
+                  });
+                }
+              });
+              
+              // Only target specific privacy-related selectors
+              const privacySelectors = [
+                '[id*="gk-consent"]',
+                '[class*="gk-consent"]',
+                '[id*="consent"]',
+                '[class*="consent"]',
+                '[id*="privacy"]',
+                '[class*="privacy"]',
+                'div[role="dialog"]',
+                'div[role="alertdialog"]'
+              ];
+              
+              privacySelectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(el => {
+                  // Skip if this looks like part of search results
+                  if (el.closest('.search-results') || 
+                      el.closest('.marketplace-links') ||
+                      el.classList.contains('search-results') ||
+                      el.classList.contains('marketplace-links')) {
+                    return;
+                  }
+                  
+                  el.style.setProperty('background-color', '#000000', 'important');
+                  el.style.setProperty('background', '#000000', 'important');
+                  
+                  // Force black on children
+                  const children = el.querySelectorAll('*');
+                  children.forEach(child => {
+                    child.style.setProperty('background-color', '#000000', 'important');
+                    child.style.setProperty('background', '#000000', 'important');
+                  });
+                });
+              });
+            }
+            
+            // Run targeted function
+            forceBlackBackgroundsTargeted();
+            setInterval(forceBlackBackgroundsTargeted, 200); // Less frequent
+            
+            // Only run on privacy button clicks
+            document.addEventListener('click', function(e) {
+              const text = (e.target.textContent || '').toLowerCase();
+              if (text.includes('do not sell') || text.includes('privacy settings') || text.includes('consent')) {
+                console.log('Privacy button clicked - targeted styling');
+                
+                // Run targeted styling
+                for (let i = 0; i < 20; i++) {
+                  setTimeout(forceBlackBackgroundsTargeted, i * 100);
+                }
+              }
+            });
+            
+            // Targeted DOM observer
+            const targetedObserver = new MutationObserver(function(mutations) {
+              mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                  mutation.addedNodes.forEach(node => {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                      const text = node.textContent || '';
+                      // Only respond to privacy-related content
+                      if (text.includes('California residents') || 
+                          text.includes('Privacy Settings') ||
+                          text.includes('Do not sell')) {
+                        setTimeout(forceBlackBackgroundsTargeted, 0);
+                      }
+                    }
+                  });
+                }
+              });
+            });
+            targetedObserver.observe(document.body, { 
+              childList: true, 
+              subtree: true
+            });
+          `
+        }} />
       </head>
       <body className="font-body antialiased bg-black text-white">
         <div className="flex justify-center pt-4 px-4 md:pt-6">
