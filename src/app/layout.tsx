@@ -117,6 +117,7 @@ export default function RootLayout({
             /* Super aggressive button targeting - only for consent banners */
             div[style*="position: fixed"] button,
             div[style*="bottom"] button,
+            div[style*="position: absolute"] button,
             div[style*="position: fixed"] input[type="button"],
             div[style*="bottom"] input[type="button"],
             .gk-consent-banner button,
@@ -154,6 +155,105 @@ export default function RootLayout({
               border-color: #777777 !important;
               box-shadow: 0 4px 8px rgba(0,0,0,0.4) !important;
               transform: translateY(-1px) !important;
+            }
+          `
+        }} />
+        
+        {/* Nuclear CSS approach - force visibility on everything */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            /* Global override for white-on-white issues */
+            * {
+              text-shadow: 0 0 1px rgba(255,255,255,0.8) !important;
+            }
+            
+            /* More aggressive targeting for consent banner */
+            div[style*="position: fixed"],
+            div[style*="bottom"],
+            div[style*="left"],
+            div[style*="right"],
+            div[style*="position: absolute"],
+            .gk-consent-banner,
+            .gk-consent-banner-container,
+            [id*="gk-consent"],
+            [class*="gk-consent"],
+            [data-gk-consent],
+            .consent-banner,
+            #consent-banner,
+            .privacy-banner,
+            [id*="consent"],
+            [class*="consent"],
+            [id*="privacy"],
+            [class*="privacy"] {
+              background: #000000 !important;
+              background-color: #000000 !important;
+              color: #ffffff !important;
+              border-color: #333333 !important;
+            }
+            
+            /* Target all text elements in consent banners */
+            div[style*="position: fixed"] *,
+            div[style*="bottom"] *,
+            div[style*="position: absolute"] *,
+            .gk-consent-banner *,
+            .gk-consent-banner-container *,
+            [id*="gk-consent"] *,
+            [class*="gk-consent"] *,
+            [data-gk-consent] *,
+            .consent-banner *,
+            #consent-banner *,
+            .privacy-banner *,
+            [id*="consent"] *,
+            [class*="consent"] *,
+            [id*="privacy"] *,
+            [class*="privacy"] * {
+              color: #ffffff !important;
+              background: transparent !important;
+              background-color: transparent !important;
+            }
+            
+            /* Super aggressive button targeting - only for consent banners */
+            div[style*="position: fixed"] button,
+            div[style*="bottom"] button,
+            div[style*="position: absolute"] button,
+            div[style*="position: fixed"] input,
+            div[style*="bottom"] input,
+            div[style*="position: absolute"] input,
+            .gk-consent-banner button,
+            .gk-consent-banner input,
+            [id*="gk-consent"] button,
+            [id*="gk-consent"] input,
+            .consent-banner button,
+            .consent-banner input,
+            [id*="consent"] button:not(.search-button):not(.marketplace-button),
+            [class*="consent"] button:not(.search-button):not(.marketplace-button),
+            [id*="privacy"] button,
+            [class*="privacy"] button {
+              background: #333333 !important;
+              background-color: #333333 !important;
+              color: #ffffff !important;
+              border: 2px solid #555555 !important;
+              border-radius: 6px !important;
+              padding: 8px 16px !important;
+              font-weight: 500 !important;
+              cursor: pointer !important;
+              margin: 4px !important;
+              min-height: 36px !important;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+              text-shadow: none !important;
+            }
+            
+            /* Button hover effects */
+            div[style*="position: fixed"] button:hover,
+            div[style*="bottom"] button:hover,
+            div[style*="position: absolute"] button:hover,
+            .gk-consent-banner button:hover,
+            [id*="gk-consent"] button:hover,
+            [id*="consent"] button:not(.search-button):not(.marketplace-button):hover,
+            [id*="privacy"] button:hover {
+              background-color: #555555 !important;
+              color: #ffffff !important;
+              border-color: #777777 !important;
             }
           `
         }} />
@@ -260,6 +360,98 @@ export default function RootLayout({
               subtree: true, 
               attributes: true,
               attributeFilter: ['style', 'class', 'id']
+            });
+          `
+        }} />
+        
+        {/* Nuclear JavaScript with setProperty and iframe handling */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            function styleEzoicElements() {
+              console.log('Nuclear approach - styling all elements...');
+              
+              // Style all positioned elements with high z-index
+              const allElements = document.querySelectorAll('*');
+              allElements.forEach(el => {
+                const styles = window.getComputedStyle(el);
+                const position = styles.position;
+                const zIndex = parseInt(styles.zIndex) || 0;
+                
+                if ((position === 'fixed' || position === 'absolute') && zIndex > 999) {
+                  // Force with setProperty and important flag
+                  el.style.setProperty('background-color', '#000000', 'important');
+                  el.style.setProperty('color', '#ffffff', 'important');
+                  
+                  // Style all children
+                  const children = el.querySelectorAll('*');
+                  children.forEach(child => {
+                    child.style.setProperty('color', '#ffffff', 'important');
+                    child.style.setProperty('background-color', 'transparent', 'important');
+                    
+                    if (child.tagName === 'BUTTON' || child.tagName === 'INPUT') {
+                      child.style.setProperty('background-color', '#333333', 'important');
+                      child.style.setProperty('color', '#ffffff', 'important');
+                      child.style.setProperty('border', '2px solid #555555', 'important');
+                      child.style.setProperty('border-radius', '6px', 'important');
+                      child.style.setProperty('padding', '8px 16px', 'important');
+                    }
+                  });
+                }
+              });
+              
+              // Target specific selectors
+              const selectors = [
+                'div[style*="position: fixed"]',
+                'div[style*="absolute"]',
+                'div[style*="bottom"]',
+                'iframe'
+              ];
+              
+              selectors.forEach(selector => {
+                document.querySelectorAll(selector).forEach(el => {
+                  if (selector === 'iframe') {
+                    // Try to style iframe content
+                    try {
+                      const iframeDoc = el.contentDocument || el.contentWindow.document;
+                      if (iframeDoc && iframeDoc.body) {
+                        iframeDoc.body.style.setProperty('background-color', '#000000', 'important');
+                        iframeDoc.body.style.setProperty('color', '#ffffff', 'important');
+                      }
+                    } catch(e) {} // Cross-origin blocked
+                  } else {
+                    el.style.setProperty('background-color', '#000000', 'important');
+                    el.style.setProperty('color', '#ffffff', 'important');
+                    
+                    el.querySelectorAll('*').forEach(child => {
+                      child.style.setProperty('color', '#ffffff', 'important');
+                      child.style.setProperty('background-color', 'transparent', 'important');
+                    });
+                  }
+                });
+              });
+            }
+            
+            // Run immediately and constantly
+            styleEzoicElements();
+            setInterval(styleEzoicElements, 50); // Every 50ms
+            
+            // Listen for any click
+            document.addEventListener('click', function(e) {
+              const text = (e.target.textContent || '').toLowerCase();
+              if (text.includes('do not sell') || text.includes('privacy') || text.includes('consent')) {
+                // Rapid fire styling
+                for (let i = 0; i < 200; i++) {
+                  setTimeout(styleEzoicElements, i * 10);
+                }
+              }
+            });
+            
+            // Watch for any DOM changes
+            const observer = new MutationObserver(styleEzoicElements);
+            observer.observe(document.body, { 
+              childList: true, 
+              subtree: true, 
+              attributes: true
             });
           `
         }} />
