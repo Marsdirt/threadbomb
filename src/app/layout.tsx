@@ -847,10 +847,10 @@ export default function RootLayout({
           `
         }} />
         
-        {/* More targeted CSS - only for privacy elements */}
+        {/* EZOIC PRIVACY STYLING ONLY - Very specific targeting */}
         <style dangerouslySetInnerHTML={{
           __html: `
-            /* Only target privacy-related elements, not all positioned elements */
+            /* Only target EZOIC-specific privacy elements */
             .gk-consent-banner,
             .gk-consent-banner-container,
             [id*="gk-consent"],
@@ -859,40 +859,42 @@ export default function RootLayout({
             .consent-banner,
             #consent-banner,
             .privacy-banner,
-            [id*="consent"]:not(.search-results):not(.marketplace-links),
-            [class*="consent"]:not(.search-results):not(.marketplace-links),
-            [id*="privacy"]:not(.search-results):not(.marketplace-links),
-            [class*="privacy"]:not(.search-results):not(.marketplace-links),
-            div[role="dialog"],
-            div[role="alertdialog"],
-            div[aria-modal="true"] {
+            div[role="dialog"][aria-label*="Privacy"],
+            div[role="dialog"][aria-label*="Consent"],
+            div[role="alertdialog"][aria-label*="Privacy"],
+            div[role="alertdialog"][aria-label*="Consent"] {
               background: #000000 !important;
               background-color: #000000 !important;
+              color: #ffffff !important;
               border: 1px solid #333333 !important;
             }
             
-            /* Only target children of privacy elements */
+            /* Only target children of EZOIC privacy elements */
             .gk-consent-banner *,
             [id*="gk-consent"] *,
             [class*="gk-consent"] *,
-            [id*="consent"]:not(.search-results) *,
-            [class*="consent"]:not(.search-results) *,
-            [id*="privacy"]:not(.search-results) *,
-            [class*="privacy"]:not(.search-results) *,
-            div[role="dialog"] *,
-            div[role="alertdialog"] *,
-            div[aria-modal="true"] * {
+            [data-gk-consent] *,
+            .consent-banner *,
+            #consent-banner *,
+            .privacy-banner *,
+            div[role="dialog"][aria-label*="Privacy"] *,
+            div[role="dialog"][aria-label*="Consent"] *,
+            div[role="alertdialog"][aria-label*="Privacy"] *,
+            div[role="alertdialog"][aria-label*="Consent"] * {
               background-color: #000000 !important;
+              color: #ffffff !important;
             }
             
-            /* Style privacy buttons to be visible */
+            /* Only style EZOIC privacy buttons */
             .gk-consent-banner button,
             [id*="gk-consent"] button,
             [class*="gk-consent"] button,
-            [id*="consent"] button:not(.search-button):not(.marketplace-button),
-            [class*="consent"] button:not(.search-button):not(.marketplace-button),
-            [id*="privacy"] button:not(.search-button):not(.marketplace-button),
-            [class*="privacy"] button:not(.search-button):not(.marketplace-button) {
+            [data-gk-consent] button,
+            .consent-banner button,
+            #consent-banner button,
+            .privacy-banner button,
+            div[role="dialog"][aria-label*="Privacy"] button,
+            div[role="dialog"][aria-label*="Consent"] button {
               background: #333333 !important;
               background-color: #333333 !important;
               color: #ffffff !important;
@@ -905,108 +907,133 @@ export default function RootLayout({
           `
         }} />
         
-        {/* More targeted JavaScript - only for high z-index positioned elements */}
+        {/* EZOIC PRIVACY JAVASCRIPT ONLY - Very specific targeting */}
         <script dangerouslySetInnerHTML={{
           __html: `
-            function forceBlackBackgroundsTargeted() {
-              console.log('Targeting only high z-index privacy elements...');
+            function styleEzoicPrivacyOnly() {
+              console.log('Styling EZOIC privacy elements only...');
               
-              // Only target elements with very high z-index (likely modals/popups)
-              const allElements = document.querySelectorAll('*');
-              allElements.forEach(el => {
-                const styles = window.getComputedStyle(el);
-                const position = styles.position;
-                const zIndex = parseInt(styles.zIndex) || 0;
-                
-                // Only target elements with very high z-index (modals/popups)
-                if ((position === 'fixed' || position === 'absolute') && zIndex > 9999) {
-                  console.log('Found high z-index element (z-index:', zIndex, '):', el);
-                  
-                  // Force black background
-                  el.style.setProperty('background-color', '#000000', 'important');
-                  el.style.setProperty('background', '#000000', 'important');
-                  
-                  // Force black background on children
-                  const children = el.querySelectorAll('*');
-                  children.forEach(child => {
-                    child.style.setProperty('background-color', '#000000', 'important');
-                    child.style.setProperty('background', '#000000', 'important');
-                  });
-                }
-              });
-              
-              // Only target specific privacy-related selectors
-              const privacySelectors = [
+              // Only target EZOIC-specific selectors - NO generic positioning
+              const ezoicSelectors = [
+                '.gk-consent-banner',
                 '[id*="gk-consent"]',
                 '[class*="gk-consent"]',
-                '[id*="consent"]',
-                '[class*="consent"]',
-                '[id*="privacy"]',
-                '[class*="privacy"]',
-                'div[role="dialog"]',
-                'div[role="alertdialog"]'
+                '[data-gk-consent]',
+                '.consent-banner',
+                '#consent-banner',
+                '.privacy-banner'
               ];
               
-              privacySelectors.forEach(selector => {
+              ezoicSelectors.forEach(selector => {
                 const elements = document.querySelectorAll(selector);
                 elements.forEach(el => {
-                  // Skip if this looks like part of search results
-                  if (el.closest('.search-results') || 
-                      el.closest('.marketplace-links') ||
-                      el.classList.contains('search-results') ||
-                      el.classList.contains('marketplace-links')) {
-                    return;
-                  }
+                  console.log('Found EZOIC element:', selector, el);
                   
+                  // Force black background on EZOIC elements only
                   el.style.setProperty('background-color', '#000000', 'important');
                   el.style.setProperty('background', '#000000', 'important');
+                  el.style.setProperty('color', '#ffffff', 'important');
                   
-                  // Force black on children
+                  // Style children of EZOIC elements
                   const children = el.querySelectorAll('*');
                   children.forEach(child => {
                     child.style.setProperty('background-color', '#000000', 'important');
                     child.style.setProperty('background', '#000000', 'important');
+                    child.style.setProperty('color', '#ffffff', 'important');
+                    
+                    // Style buttons within EZOIC elements
+                    if (child.tagName === 'BUTTON' || child.tagName === 'INPUT') {
+                      child.style.setProperty('background-color', '#333333', 'important');
+                      child.style.setProperty('border', '2px solid #555555', 'important');
+                      child.style.setProperty('border-radius', '6px', 'important');
+                      child.style.setProperty('padding', '8px 16px', 'important');
+                    }
                   });
                 });
               });
+              
+              // Target California Privacy popup by EXACT TEXT CONTENT only
+              const allElements = document.querySelectorAll('*');
+              allElements.forEach(el => {
+                const textContent = el.textContent || el.innerText || '';
+                
+                // Only if it contains the EXACT California privacy text
+                if (textContent.includes('California residents may opt out') ||
+                    textContent.includes('Do not sell or share my information')) {
+                  
+                  console.log('Found California privacy popup by text:', el);
+                  
+                  // Go up to find the popup container (but not too far)
+                  let parent = el;
+                  for (let i = 0; i < 8; i++) {
+                    if (parent && parent !== document.body) {
+                      const styles = window.getComputedStyle(parent);
+                      
+                      // Only style if it's actually a popup/modal
+                      if (styles.position === 'fixed' || styles.position === 'absolute') {
+                        parent.style.setProperty('background-color', '#000000', 'important');
+                        parent.style.setProperty('background', '#000000', 'important');
+                        parent.style.setProperty('color', '#ffffff', 'important');
+                        
+                        // Style all children
+                        const children = parent.querySelectorAll('*');
+                        children.forEach(child => {
+                          child.style.setProperty('background-color', '#000000', 'important');
+                          child.style.setProperty('background', '#000000', 'important');
+                          child.style.setProperty('color', '#ffffff', 'important');
+                        });
+                        break; // Found the popup container
+                      }
+                      
+                      parent = parent.parentElement;
+                    }
+                  }
+                }
+              });
             }
             
-            // Run targeted function
-            forceBlackBackgroundsTargeted();
-            setInterval(forceBlackBackgroundsTargeted, 200); // Less frequent
+            // Run EZOIC privacy styling only
+            styleEzoicPrivacyOnly();
+            setInterval(styleEzoicPrivacyOnly, 200); // Less frequent
             
-            // Only run on privacy button clicks
+            // Only trigger on EZOIC privacy clicks
             document.addEventListener('click', function(e) {
-              const text = (e.target.textContent || '').toLowerCase();
-              if (text.includes('do not sell') || text.includes('privacy settings') || text.includes('consent')) {
-                console.log('Privacy button clicked - targeted styling');
+              const target = e.target;
+              const text = (target.textContent || '').toLowerCase();
+              
+              // Only trigger for EZOIC privacy-specific text
+              if (text.includes('do not sell') || 
+                  text.includes('privacy settings') ||
+                  text.includes('save settings') ||
+                  text.includes('california residents')) {
+                console.log('EZOIC privacy button clicked');
                 
-                // Run targeted styling
-                for (let i = 0; i < 20; i++) {
-                  setTimeout(forceBlackBackgroundsTargeted, i * 100);
+                // Style EZOIC elements multiple times
+                for (let i = 0; i < 30; i++) {
+                  setTimeout(styleEzoicPrivacyOnly, i * 100);
                 }
               }
             });
             
-            // Targeted DOM observer
-            const targetedObserver = new MutationObserver(function(mutations) {
+            // Watch for EZOIC privacy content only
+            const ezoicObserver = new MutationObserver(function(mutations) {
               mutations.forEach(function(mutation) {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                   mutation.addedNodes.forEach(node => {
                     if (node.nodeType === Node.ELEMENT_NODE) {
                       const text = node.textContent || '';
-                      // Only respond to privacy-related content
-                      if (text.includes('California residents') || 
-                          text.includes('Privacy Settings') ||
-                          text.includes('Do not sell')) {
-                        setTimeout(forceBlackBackgroundsTargeted, 0);
+                      // Only respond to EZOIC privacy-specific content
+                      if (text.includes('California residents may opt out') || 
+                          text.includes('Do not sell or share my information') ||
+                          text.includes('gk-consent')) {
+                        setTimeout(styleEzoicPrivacyOnly, 50);
                       }
                     }
                   });
                 }
               });
             });
-            targetedObserver.observe(document.body, { 
+            ezoicObserver.observe(document.body, { 
               childList: true, 
               subtree: true
             });
