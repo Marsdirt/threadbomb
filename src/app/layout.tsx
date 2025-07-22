@@ -606,6 +606,110 @@ export default function RootLayout({
             });
           `
         }} />
+        
+        {/* Enhanced JavaScript specifically for popup elements */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            function forceBlackBackgroundsOnPopup() {
+              console.log('Targeting popup elements specifically...');
+              
+              // Target ALL elements - more aggressive for popups
+              const allElements = document.querySelectorAll('*');
+              allElements.forEach(el => {
+                const styles = window.getComputedStyle(el);
+                const position = styles.position;
+                const zIndex = parseInt(styles.zIndex) || 0;
+                
+                // Lower z-index threshold to catch more popups
+                if ((position === 'fixed' || position === 'absolute') && zIndex > 100) {
+                  console.log('Found positioned element (z-index:', zIndex, '):', el);
+                  
+                  // Force black background with all possible CSS properties
+                  el.style.setProperty('background-color', '#000000', 'important');
+                  el.style.setProperty('background', '#000000', 'important');
+                  el.style.setProperty('background-image', 'none', 'important');
+                  
+                  // Force black background on ALL children and descendants
+                  const allChildren = el.querySelectorAll('*');
+                  allChildren.forEach(child => {
+                    child.style.setProperty('background-color', '#000000', 'important');
+                    child.style.setProperty('background', '#000000', 'important');
+                    child.style.setProperty('background-image', 'none', 'important');
+                  });
+                }
+              });
+              
+              // Also target by content - look for elements containing privacy-related text
+              const textSelectors = [
+                '*[innerHTML*="Do Not Sell"]',
+                '*[innerHTML*="Privacy"]', 
+                '*[innerHTML*="Consent"]',
+                '*[innerHTML*="Cookie"]'
+              ];
+              
+              textSelectors.forEach(selector => {
+                try {
+                  const elements = document.querySelectorAll(selector);
+                  elements.forEach(el => {
+                    // Go up the DOM tree to find the container
+                    let parent = el;
+                    for (let i = 0; i < 5; i++) {
+                      if (parent) {
+                        parent.style.setProperty('background-color', '#000000', 'important');
+                        parent.style.setProperty('background', '#000000', 'important');
+                        parent = parent.parentElement;
+                      }
+                    }
+                  });
+                } catch(e) {}
+              });
+            }
+            
+            // Run the enhanced function
+            forceBlackBackgroundsOnPopup();
+            setInterval(forceBlackBackgroundsOnPopup, 50); // Even more frequent
+            
+            // Enhanced click listener with more triggers
+            document.addEventListener('click', function(e) {
+              const target = e.target;
+              const text = (target.textContent || target.innerText || '').toLowerCase();
+              
+              if (text.includes('do not sell') || 
+                  text.includes('privacy') || 
+                  text.includes('consent') ||
+                  text.includes('cookie') ||
+                  text.includes('preference')) {
+                console.log('Privacy-related button clicked - aggressive popup styling');
+                
+                // Run styling 100 times with very short intervals
+                for (let i = 0; i < 100; i++) {
+                  setTimeout(forceBlackBackgroundsOnPopup, i * 10);
+                }
+                
+                // Also try after longer delays to catch slow-loading popups
+                setTimeout(forceBlackBackgroundsOnPopup, 1000);
+                setTimeout(forceBlackBackgroundsOnPopup, 2000);
+                setTimeout(forceBlackBackgroundsOnPopup, 3000);
+              }
+            });
+            
+            // Watch for ANY DOM changes and respond immediately
+            const observer = new MutationObserver(function(mutations) {
+              mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                  // New nodes added - might be popup
+                  setTimeout(forceBlackBackgroundsOnPopup, 0);
+                  setTimeout(forceBlackBackgroundsOnPopup, 10);
+                  setTimeout(forceBlackBackgroundsOnPopup, 50);
+                }
+              });
+            });
+            observer.observe(document.body, { 
+              childList: true, 
+              subtree: true
+            });
+          `
+        }} />
       </head>
       <body className="font-body antialiased bg-black text-white">
         <div className="flex justify-center pt-4 px-4 md:pt-6">
